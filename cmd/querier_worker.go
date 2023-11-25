@@ -6,7 +6,6 @@ import (
 	"github.com/ergo-services/ergo/gen"
 	"github.com/tidwall/buntdb"
 	"log/slog"
-	"strconv"
 	"strings"
 	"time"
 	"traffic/apps/events"
@@ -43,7 +42,7 @@ func (w *QueriesWorker) HandleWorkerCall(process *gen.PoolWorkerProcess, message
 				return false
 			}
 
-			lon, lat, ok := coordToLonLat(val)
+			lon, lat, ok := events.CoordToLonLat(val)
 			if !ok {
 				return false
 			}
@@ -62,26 +61,6 @@ func (w *QueriesWorker) HandleWorkerCall(process *gen.PoolWorkerProcess, message
 	}
 
 	return elems
-}
-
-func coordToLonLat(val string) (float64, float64, bool) {
-	if len(val) == 0 {
-		return 0, 0, false
-	}
-	// Ugly, parse coords string
-	coords := strings.Split(val[1:len(val)-1], " ")
-	if len(coords) < 2 {
-		return 0, 0, false
-	}
-	lon, err := strconv.ParseFloat(coords[0], 64)
-	if err != nil {
-		return 0, 0, false
-	}
-	lat, err := strconv.ParseFloat(coords[1], 64)
-	if err != nil {
-		return 0, 0, false
-	}
-	return lon, lat, true
 }
 
 func (w *QueriesWorker) HandleWorkerCast(process *gen.PoolWorkerProcess, message etf.Term) {

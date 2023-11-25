@@ -1,5 +1,10 @@
 package events
 
+import (
+	"strconv"
+	"strings"
+)
+
 type VehiclePosition struct {
 	ID   string
 	Lon  float64
@@ -13,4 +18,24 @@ type GeoPos struct {
 	Lon       float64
 	Lat       float64
 	Emergency bool
+}
+
+func CoordToLonLat(val string) (float64, float64, bool) {
+	if len(val) == 0 {
+		return 0, 0, false
+	}
+	// Ugly, parse coords string
+	coords := strings.Split(val[1:len(val)-1], " ")
+	if len(coords) < 2 {
+		return 0, 0, false
+	}
+	lon, err := strconv.ParseFloat(coords[0], 64)
+	if err != nil {
+		return 0, 0, false
+	}
+	lat, err := strconv.ParseFloat(coords[1], 64)
+	if err != nil {
+		return 0, 0, false
+	}
+	return lon, lat, true
 }

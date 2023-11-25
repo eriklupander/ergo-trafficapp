@@ -9,6 +9,7 @@ import (
 	"os"
 	"strconv"
 	"sync"
+	"sync/atomic"
 	"time"
 )
 
@@ -37,6 +38,14 @@ func main() {
 			os.Exit(1)
 		}
 	}
+	total := atomic.Int64{}
+	go func() {
+		fmt.Printf("UDP packets sent: ")
+		for {
+			fmt.Printf("%d ... ", total.Load())
+			time.Sleep(time.Second * 5)
+		}
+	}()
 	wg := sync.WaitGroup{}
 	for i := 0; i < workers; i++ {
 		// Dial to the address with UDP
@@ -52,7 +61,7 @@ func main() {
 		go func(i int) {
 
 			ticker := time.NewTicker(time.Second)
-			timeout := time.After(time.Minute)
+			timeout := time.After(time.Hour)
 			for {
 				select {
 				case <-ticker.C:
@@ -74,6 +83,7 @@ func main() {
 						fmt.Println(err)
 						os.Exit(1)
 					}
+					total.Add(1)
 				case <-timeout:
 					wg.Done()
 					return

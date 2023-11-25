@@ -38,7 +38,7 @@ func (s *Emergency) HandleInfo(process *gen.ServerProcess, message etf.Term) gen
 
 	trafficEvt, ok := message.(events.TrafficEventMessage)
 	if !ok {
-		slog.Error("type conversion from etf.Term to events.TrafficEventMessage failed")
+		slog.Error("Emergency: type conversion from etf.Term to events.TrafficEventMessage failed", slog.Any("type", fmt.Sprintf("%T", message)))
 		return gen.ServerStatusIgnore
 	}
 
@@ -54,8 +54,9 @@ func (s *Emergency) HandleInfo(process *gen.ServerProcess, message etf.Term) gen
 			slog.String("vehicle_id", update.ID),
 			slog.Float64("lon", update.Lon),
 			slog.Float64("lat", update.Lat),
+			slog.Int("queue_len", process.Info().MessageQueueLen),
 		)
-		time.Sleep(time.Millisecond * 500) // fake a slow external call here.
+		time.Sleep(time.Millisecond * 10) // fake a slow external call here.
 	}
 
 	return gen.ServerStatusOK

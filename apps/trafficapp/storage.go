@@ -40,7 +40,11 @@ func (s *Storage) Init(process *gen.ServerProcess, args ...etf.Term) error {
 func (s *Storage) HandleInfo(process *gen.ServerProcess, message etf.Term) gen.ServerStatus {
 	slog.Debug("[Storage] HandleInfo")
 
-	trafficEvt := message.(events.VehiclePosition)
+	trafficEvt, ok := message.(events.VehiclePosition)
+	if !ok {
+		slog.Error("Storage: Type conversion from etf.Term to events.VehiclePosition failed")
+		return gen.ServerStatusIgnore
+	}
 
 	var err error
 	// Store position on fleet index

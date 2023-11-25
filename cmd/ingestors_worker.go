@@ -38,7 +38,7 @@ func (w *IngestorsWorker) HandleWorkerInfo(process *gen.PoolWorkerProcess, messa
 
 	trafficEvt, ok := message.(events.TrafficEventMessage)
 	if !ok {
-		slog.Error("type conversion from etf.Term to events.TrafficEventMessage failed")
+		slog.Error("IngestorsWorker: type conversion from etf.Term to events.TrafficEventMessage failed", slog.Any("type", fmt.Sprintf("%T", message)))
 		return
 	}
 

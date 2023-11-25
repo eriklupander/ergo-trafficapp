@@ -25,11 +25,6 @@ func (s *Dispatcher) Init(process *gen.ServerProcess, args ...etf.Term) error {
 		slog.Error("can't register event " + err.Error())
 		return err
 	}
-	if err := process.RegisterEvent(events.NearbyQueryEvent, events.NearbyQueryEventMessage{}); err != nil {
-		slog.Error("can't register event " + err.Error())
-		return err
-	}
-
 	return nil
 }
 
@@ -45,10 +40,6 @@ func (s *Dispatcher) HandleInfo(process *gen.ServerProcess, message etf.Term) ge
 	case events.TrafficEventMessage:
 		if err := process.SendEventMessage(events.TrafficEvent, message); err != nil {
 			slog.Error("Dispatcher: handle SendEventMessage(events.TrafficEvent) error", slog.Any("error", err))
-		}
-	case events.NearbyQueryEventMessage:
-		if err := process.SendEventMessage(events.NearbyQueryEvent, message); err != nil {
-			slog.Error("Dispatcher: handle SendEventMessage(events.NearbyQueryEventMessage) error", slog.Any("error", err))
 		}
 	}
 
