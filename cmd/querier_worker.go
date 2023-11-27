@@ -29,10 +29,14 @@ func (w *QueriesWorker) InitPoolWorker(process *gen.PoolWorkerProcess, args ...e
 }
 
 func (w *QueriesWorker) HandleWorkerCall(process *gen.PoolWorkerProcess, message etf.Term) etf.Term {
-	slog.Debug("QueriesWorker received Call request")
-	query := message.(events.NearbyQueryEventMessage)
+	slog.Debug("QueriesWorker received Call request", slog.Any("process_id", process.Self().String()))
+	query, ok := message.(events.NearbyQueryEventMessage)
 
 	elems := make([]events.VehiclePosition, 0)
+	if !ok {
+		slog.Error("QueriesWorker: invalid type passed to HandleWorkerCall", slog.Any("type", fmt.Sprintf("%T", message)))
+		return elems
+	}
 
 	// Call DB
 	if err := w.db.View(func(tx *buntdb.Tx) error {

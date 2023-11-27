@@ -20,14 +20,6 @@ type WebHandler struct {
 	gen.WebHandler
 }
 
-// Init invoked on a start this process.
-//func (r *WebHandler) Init(process *gen.ServerProcess, args ...etf.Term) error {
-//	slog.Info("init WebHandler")
-//
-//	slog.Info("WebHandler process is started")
-//	return nil
-//}
-
 //
 // Mandatory callbacks
 //
