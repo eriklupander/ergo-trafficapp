@@ -33,18 +33,20 @@ func (r *WebHandler) HandleRequest(process *gen.WebHandlerProcess, request gen.W
 		request.Response.WriteHeader(http.StatusBadRequest)
 		return gen.WebHandlerStatusDone
 	}
-	lon, err := strconv.ParseFloat(request.Request.URL.Query().Get("lon"), 64)
-	if err != nil {
-		request.Response.WriteHeader(http.StatusBadRequest)
-		return gen.WebHandlerStatusDone
-	}
+
 	lat, err := strconv.ParseFloat(request.Request.URL.Query().Get("lat"), 64)
 	if err != nil {
 		request.Response.WriteHeader(http.StatusBadRequest)
 		return gen.WebHandlerStatusDone
 	}
 
-	elems, err := process.Call("queries_workers", events.NearbyQueryEventMessage{Lon: lon, Lat: lat})
+	lon, err := strconv.ParseFloat(request.Request.URL.Query().Get("lon"), 64)
+	if err != nil {
+		request.Response.WriteHeader(http.StatusBadRequest)
+		return gen.WebHandlerStatusDone
+	}
+
+	elems, err := process.Call("queries_workers", events.NearbyQueryEventMessage{Lat: lat, Lon: lon})
 	if err != nil {
 		slog.Error("Call storage error", slog.Any("error", err))
 		request.Response.WriteHeader(http.StatusNotFound)

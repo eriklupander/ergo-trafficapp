@@ -22,7 +22,7 @@ type UDPReceiverHandler struct {
 
 // HandlePacket invokes on receiving UDP datagram
 func (uh *UDPReceiverHandler) HandlePacket(process *gen.UDPHandlerProcess, data []byte, packet gen.UDPPacket) {
-	slog.Info("[UDP handler] got message", slog.Int("queue_len", process.Info().MessageQueueLen), slog.String("process_id", process.Self().String()))
+	slog.Debug("[UDP handler] got message", slog.Int("queue_len", process.Info().MessageQueueLen), slog.String("process_id", process.Self().String()))
 
 	err := process.Send("dispatcher", events.TrafficEventMessage{Date: time.Now().UnixMilli(), Payload: data})
 	if err != nil {

@@ -87,7 +87,7 @@ func main() {
 	slog.Info("  process is started", slog.String("process_name", process.Name()), slog.Any("pid", process.Self()))
 
 	// starting process UDPReceiver
-	udpProcess, err := trafficNode.Spawn("udpreceiver", gen.ProcessOptions{MailboxSize: 4096, DirectboxSize: 4096}, createUDPReceiver())
+	udpProcess, err := trafficNode.Spawn("udpreceiver", gen.ProcessOptions{MailboxSize: trafficapp.DefaultMailboxSize, DirectboxSize: trafficapp.DefaultDirectMailboxSize}, createUDPReceiver())
 	if err != nil {
 		panic(err)
 	}
@@ -106,23 +106,6 @@ func main() {
 		panic(err)
 	}
 	slog.Info("  process is started", slog.String("process_name", process.Name()), slog.Any("pid", process.Self()))
-
-	// Dump stats to stdout every 30 seconds
-	//go func() {
-	//	ticker := time.NewTicker(time.Second * 10)
-	//OUTER:
-	//	for {
-	//		select {
-	//		case <-ticker.C:
-	//			slog.Info(fmt.Sprintf("Traffic node stats: %+v\n", trafficNode.Stats()))
-	//			slog.Info("storage message box sizes", slog.Int("mailbox", storageProcess.Info().MessageQueueLen))
-	//			slog.Info("UDP message box sizes", slog.Int("mailbox", udpProcess.Info().MessageQueueLen))
-	//		case <-ctx.Done():
-	//			break OUTER
-	//		}
-	//	}
-	//
-	//}()
 
 	trafficNode.Wait()
 }

@@ -1,11 +1,12 @@
 package main
 
 import (
+	"fmt"
 	"github.com/ergo-services/ergo/etf"
 	"github.com/ergo-services/ergo/gen"
+	"log/slog"
 
 	"crypto/tls"
-	"fmt"
 	"github.com/ergo-services/ergo/lib"
 )
 
@@ -30,8 +31,8 @@ func (ts *TCPReceiver) InitTCP(process *gen.TCPProcess, args ...etf.Term) (gen.T
 	options.NumHandlers = 5
 
 	// Enable SSL with self-signed certificate
-	fmt.Println("Enabled SSL for TCP server with self-signed certificate. You may check it with command below:")
-	fmt.Printf("   $ openssl s_client -connect %s:%d\n", options.Host, options.Port)
+	slog.Info("Enabled SSL for TCP server with self-signed certificate. You may check it with command below:")
+	slog.Info(fmt.Sprintf("   $ openssl s_client -connect %s:%d\n", options.Host, options.Port))
 	cert, _ := lib.GenerateSelfSignedCert("TCPReceiver Service")
 	certUpdater := lib.CreateCertUpdater(cert)
 	tlsConfig := &tls.Config{

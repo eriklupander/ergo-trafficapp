@@ -6,7 +6,6 @@ import (
 	"github.com/ergo-services/ergo/gen"
 	"github.com/tidwall/buntdb"
 	"log/slog"
-	"traffic/apps/events"
 )
 
 type Queries struct {
@@ -24,10 +23,6 @@ func (p *Queries) InitPool(process *gen.PoolProcess, args ...etf.Term) (gen.Pool
 	opts := gen.PoolOptions{
 		Worker:     createQueriesWorker(p.db),
 		NumWorkers: 3,
-	}
-
-	if err := process.MonitorEvent(events.NearbyQueryEvent); err != nil {
-		slog.Error("can't monitor NearbyQueryEvent", slog.Any("error", err))
 	}
 
 	return opts, nil

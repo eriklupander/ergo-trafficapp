@@ -25,7 +25,7 @@ func (us *UDPReceiver) InitUDP(process *gen.UDPProcess, args ...etf.Term) (gen.U
 	options.Port = 9092
 	options.NumHandlers = 4
 	options.ExtraHandlers = true
-	options.QueueLength = 4096
+	options.QueueLength = 8192
 
 	return options, nil
 }

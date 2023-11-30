@@ -23,7 +23,7 @@ type QueriesWorker struct {
 }
 
 func (w *QueriesWorker) InitPoolWorker(process *gen.PoolWorkerProcess, args ...etf.Term) error {
-	fmt.Println("   started pool queries worker: ", process.Self())
+	slog.Info("   started pool queries worker", slog.Any("process_id", process.Self()))
 
 	return nil
 }
@@ -41,20 +41,20 @@ func (w *QueriesWorker) HandleWorkerCall(process *gen.PoolWorkerProcess, message
 	// Call DB
 	if err := w.db.View(func(tx *buntdb.Tx) error {
 		count := 0
-		return tx.Nearby("fleet", buntdb.Point(query.Lon, query.Lat), func(key, val string, dist float64) bool {
+		return tx.Nearby("fleet", buntdb.Point(query.Lat, query.Lon), func(key, val string, dist float64) bool {
 			if count >= maxItems {
 				return false
 			}
 
-			lon, lat, ok := events.CoordToLonLat(val)
+			lat, lon, ok := events.CoordToLatLon(val)
 			if !ok {
 				return false
 			}
 
 			elems = append(elems, events.VehiclePosition{
 				ID:   strings.Split(key, ":")[1],
-				Lon:  lon,
 				Lat:  lat,
+				Lon:  lon,
 				Date: time.Now().UnixMilli(),
 			})
 			count++
@@ -68,16 +68,17 @@ func (w *QueriesWorker) HandleWorkerCall(process *gen.PoolWorkerProcess, message
 }
 
 func (w *QueriesWorker) HandleWorkerCast(process *gen.PoolWorkerProcess, message etf.Term) {
-	fmt.Printf("QueriesWorker [%s] received Cast message: %v\n", process.Self(), message)
+	slog.Debug("QueriesWorker received Cast message")
 }
 
 func (w *QueriesWorker) HandleWorkerInfo(process *gen.PoolWorkerProcess, message etf.Term) {
-	fmt.Printf("QueriesWorker [%s] received Info message: %v\n", process.Self(), message)
+	slog.Debug("QueriesWorker received Info message", slog.Any("process_id", process.Self().String()))
 
 	query := message.(events.NearbyQueryEventMessage)
+
 	// Call DB
 	if err := w.db.View(func(tx *buntdb.Tx) error {
-		return tx.Nearby("fleet", fmt.Sprintf("[%f %f]", query.Lon, query.Lat), func(key, val string, dist float64) bool {
+		return tx.Nearby("fleet", fmt.Sprintf("[%f %f]", query.Lat, query.Lon), func(key, val string, dist float64) bool {
 			slog.Info("found item", slog.String("key", key), slog.String("val", val), slog.Float64("dist", dist))
 			return true
 		})

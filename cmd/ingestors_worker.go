@@ -6,7 +6,6 @@ import (
 	"github.com/ergo-services/ergo/gen"
 	"github.com/vmihailenco/msgpack/v5"
 	"log/slog"
-	"math/rand"
 	"traffic/apps/events"
 )
 
@@ -19,18 +18,17 @@ type IngestorsWorker struct {
 }
 
 func (w *IngestorsWorker) InitPoolWorker(process *gen.PoolWorkerProcess, args ...etf.Term) error {
-	fmt.Println("   started pool IngestorsWorker: ", process.Self())
-
+	slog.Info("   started pool IngestorsWorker", slog.Any("process", process.Self()))
 	return nil
 }
 
 func (w *IngestorsWorker) HandleWorkerCall(process *gen.PoolWorkerProcess, message etf.Term) etf.Term {
-	fmt.Printf("IngestorsWorker [%s] received Call request: %v\n", process.Self(), message)
+	slog.Debug("IngestorsWorker received Call request")
 	return "pong"
 }
 
 func (w *IngestorsWorker) HandleWorkerCast(process *gen.PoolWorkerProcess, message etf.Term) {
-	fmt.Printf("IngestorsWorker [%s] received Cast message: %v\n", process.Self(), message)
+	slog.Debug("IngestorsWorker received Cast message")
 }
 
 func (w *IngestorsWorker) HandleWorkerInfo(process *gen.PoolWorkerProcess, message etf.Term) {
@@ -50,18 +48,14 @@ func (w *IngestorsWorker) HandleWorkerInfo(process *gen.PoolWorkerProcess, messa
 	}
 
 	// Comment in to fake some time-consuming work.
-	//time.Sleep(time.Millisecond * time.Duration(rand.Intn(50)))
+	//time.Sleep(time.Millisecond * time.Duration(rand.Intn(10)))
 
 	if err := process.Send("storage", events.VehiclePosition{
 		ID:   geoPosUpdate.ID,
-		Lon:  geoPosUpdate.Lon,
 		Lat:  geoPosUpdate.Lat,
+		Lon:  geoPosUpdate.Lon,
 		Date: trafficEvt.Date,
 	}); err != nil {
 		slog.Error("IngestorsWorker: Send to storage", slog.Any("error", err))
 	}
-}
-
-func rndGeo() float64 {
-	return -90 + rand.Float64()*180.0
 }

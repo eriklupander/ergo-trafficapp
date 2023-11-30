@@ -50,23 +50,23 @@ func (s *Dispatcher) HandleInfo(process *gen.ServerProcess, message etf.Term) ge
 // Return ServerStatusStop to stop server with "normal" reason. Use ServerStatus(error)
 // for the custom reason
 func (s *Dispatcher) HandleCast(process *gen.ServerProcess, message etf.Term) gen.ServerStatus {
-	fmt.Printf("HandleCast: %#v \n", message)
+	slog.Debug("HandleCast [Dispatcher]")
 	return gen.ServerStatusOK
 }
 
 // HandleCall invoked if this process got sync request using ServerProcess.Call(...)
 func (s *Dispatcher) HandleCall(process *gen.ServerProcess, from gen.ServerFrom, message etf.Term) (etf.Term, gen.ServerStatus) {
-	fmt.Printf("HandleCall: %#v \n", message)
+	slog.Debug("HandleCall [Dispatcher]")
 	return nil, gen.ServerStatusOK
 }
 
 // HandleDirect invoked on a direct request made with Process.Direct(...)
 func (s *Dispatcher) HandleDirect(process *gen.ServerProcess, ref etf.Ref, message interface{}) (interface{}, gen.DirectStatus) {
-	fmt.Printf("HandleDirect: %#v \n", message)
+	slog.Debug("HandleDirect [Dispatcher]")
 	return nil, nil
 }
 
 // Terminate invoked on a termination process. ServerProcess.State is not locked during this callback.
 func (s *Dispatcher) Terminate(process *gen.ServerProcess, reason string) {
-	fmt.Printf("Terminated: %s with reason %s", process.Self(), reason)
+	slog.Info("Terminated [Dispatcher]", slog.Any("process_id", process.Self()), slog.String("reason", reason))
 }

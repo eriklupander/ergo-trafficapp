@@ -32,8 +32,8 @@ func TestStoreAndQuery(t *testing.T) {
 	testee := createStorage(db)
 	serverStatus := testee.HandleInfo(process, events.VehiclePosition{
 		ID:   "abc-123",
-		Lon:  12.12,
 		Lat:  34.34,
+		Lon:  12.12,
 		Date: time.Now().UnixMilli(),
 	})
 	assert.Equal(t, gen.ServerStatusOK, serverStatus)
@@ -50,7 +50,7 @@ func TestStoreAndQuery(t *testing.T) {
 		pos, err := tx.Get("fleet:abc-123:pos")
 		assert.NoError(t, err)
 
-		geoPos.lon, geoPos.lat, _ = events.CoordToLonLat(pos)
+		geoPos.lat, geoPos.lon, _ = events.CoordToLatLon(pos)
 		return nil
 	})
 	assert.NoError(t, err)

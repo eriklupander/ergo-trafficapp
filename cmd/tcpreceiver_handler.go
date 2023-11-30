@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"log/slog"
 
 	"github.com/ergo-services/ergo/etf"
 	"github.com/ergo-services/ergo/gen"
@@ -21,7 +22,7 @@ type TCPReceiverHandler struct {
 
 // HandlePacket
 func (th *TCPReceiverHandler) HandlePacket(process *gen.TCPHandlerProcess, packet []byte, conn *gen.TCPConnection) (int, int, gen.TCPHandlerStatus) {
-	fmt.Printf("[TCP handler] got message from %q: %#v\n", conn.Addr.String(), packet)
+	slog.Info("[TCP handler] got message")
 
 	// If you want to send a reply message, use conn.Socket.Write(reply) for that.
 
@@ -50,11 +51,11 @@ func (th *TCPReceiverHandler) HandlePacket(process *gen.TCPHandlerProcess, packe
 //
 
 func (th *TCPReceiverHandler) HandleConnect(process *gen.TCPHandlerProcess, conn *gen.TCPConnection) gen.TCPHandlerStatus {
-	fmt.Printf("[TCP handler] got new connection from %q\n", conn.Addr.String())
+	slog.Info(fmt.Sprintf("[TCP handler] got new connection from %q\n", conn.Addr.String()))
 	return gen.TCPHandlerStatusOK
 }
 func (th *TCPReceiverHandler) HandleDisconnect(process *gen.TCPHandlerProcess, conn *gen.TCPConnection) {
-	fmt.Printf("[TCP handler] connection with %q terminated\n", conn.Addr.String())
+	slog.Info(fmt.Sprintf("[TCP handler] connection with %q terminated\n", conn.Addr.String()))
 }
 
 func (th *TCPReceiverHandler) HandleTimeout(process *gen.TCPHandlerProcess, conn *gen.TCPConnection) gen.TCPHandlerStatus {
